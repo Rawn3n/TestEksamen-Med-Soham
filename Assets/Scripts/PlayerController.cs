@@ -1,112 +1,38 @@
-﻿using Unity.Cinemachine;
-using Unity.Netcode;
+using PurrNet;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-public class PlayerController : NetworkBehaviour
+public class PlayerController : NetworkIdentity
 {
-    #region Inspector
-
-    [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float dodgeForce = 8f;
-    [SerializeField] private float dodgeCooldown = 0.6f;
+    private PlayerInputActions inputActions;
 
-    [Header("References")]
-    [SerializeField] private Camera playerCamera;
-    [SerializeField] private Animator animator;
-
-    #endregion
-
-    #region Private Fields
-
-    private Rigidbody rb;
-    private float lastDodgeTime;
-    private float moveInput;
-
-    #endregion
-
-    #region Netcode
-    public override void OnNetworkSpawn()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-
-        if (!IsOwner)
-        {
-            playerCamera.enabled = false;
-            GetComponentInChildren<CinemachineBrain>().enabled = false;
-        }
+        inputActions = new PlayerInputActions();
     }
 
-    #endregion
-
-    #region Unity Callbacks
-    void Update()
+    protected override void OnSpawned()
     {
-        if (!IsOwner) return;
+        base.OnSpawned();
 
-        ReadMovement();
-        HandleDodge();
+        enabled = isOwner;
+
+        if (isOwner)
+            inputActions.Enable();
     }
 
-    void FixedUpdate()
+    private void OnDisable()
     {
-        if (!IsOwner) return;
-
-        Move();
+        if (inputActions != null)
+            inputActions.Disable();
     }
 
-    #endregion
-
-    #region Movement
-    void ReadMovement()
+    private void Update()
     {
-        moveInput =
-            (Keyboard.current.dKey.isPressed ? 1 : 0) -
-            (Keyboard.current.aKey.isPressed ? 1 : 0);
+        Vector2 move = inputActions.Player.Move.ReadValue<Vector2>();
+        Vector3 movement = new Vector3(move.x, 0f, move.y);
 
-        animator.SetFloat("Speed", Mathf.Abs(moveInput));
+        transform.position += movement * moveSpeed * Time.deltaTime;
     }
-
-    void Move()
-    {
-        rb.linearVelocity = new Vector3(
-            moveInput * moveSpeed,
-            rb.linearVelocity.y,
-            rb.linearVelocity.z
-        );
-    }
-
-    #endregion
-
-    #region Dodge
-    void HandleDodge()
-    {
-        if (Time.time < lastDodgeTime + dodgeCooldown) return;
-
-        bool shiftHeld = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
-
-        if (!shiftHeld) return;
-
-        if (Keyboard.current.aKey.wasPressedThisFrame)
-            Dodge(-1);
-
-        if (Keyboard.current.dKey.wasPressedThisFrame)
-            Dodge(1);
-    }
-
-    void Dodge(int direction)
-    {
-        lastDodgeTime = Time.time;
-
-        animator.SetTrigger("Dodge");
-
-        // Animation is left by default → flip for right dodge
-        transform.localScale = new Vector3(direction, 1, 1);
-
-        rb.AddForce(Vector3.right * direction * dodgeForce, ForceMode.VelocityChange);
-    }
-
-    #endregion
 }
