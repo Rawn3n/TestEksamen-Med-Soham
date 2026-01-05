@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "InputForUI",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "7ce61e0b-1d1d-44d9-9204-ece9736721b3",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "bf38f202-30cd-426b-abdf-f773ca3192f3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0e2aee32-8f7f-46e4-814a-0ff511d1ddd1",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
