@@ -153,7 +153,7 @@ MonoBehaviour:
   dodgeForce: 15
   dodgeDuration: 0.25
   dodgeCooldown: 1.2
-  sprintMultiplier: 1.5
+  sprintMultiplier: 3
   jumpForce: 5
   groundMask:
     serializedVersion: 2

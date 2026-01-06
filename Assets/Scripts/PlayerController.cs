@@ -1,4 +1,4 @@
-using PurrNet;
+﻿using PurrNet;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -13,8 +13,19 @@ public class PlayerController : NetworkIdentity
     [SerializeField] float dodgeCooldown = 1.2f;
     [SerializeField] float sprintMultiplier = 1.5f;
 
-    private bool isDodging;
-    private float lastHorizontal;
+    bool isDodging;
+    bool canDodge = true;
+
+
+    [Header("Stamina")]
+    [SerializeField] float maxStamina = 100f;
+    [SerializeField] float staminaRegenRate = 20f;
+    [SerializeField] float sprintStaminaDrain = 15f;
+    [SerializeField] float dodgeStaminaCost = 35f;
+
+    public SyncVar<float> currentStamina = new SyncVar<float>(0f);
+    public float StaminaNormalized =>
+        maxStamina <= 0f ? 0f : currentStamina.value / maxStamina;
 
 
 
@@ -24,8 +35,7 @@ public class PlayerController : NetworkIdentity
     [SerializeField] Transform groundCheck;
     [SerializeField] float groundCheckRadius = 0.2f;
 
-    private bool isGrounded;
-
+    bool isGrounded;
 
     [Header("Mouse Look")]
     [SerializeField] float mouseSensitivity = 2f;
@@ -33,17 +43,13 @@ public class PlayerController : NetworkIdentity
     [SerializeField] CinemachineCamera cmCamera;
 
     Rigidbody rb;
-    Animator animator;
     PlayerInputActions input;
-
     float xRotation;
-    bool canDodge = true;
 
-    private void Awake()
+    void Awake()
     {
         input = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
-        animator = GetComponentInChildren<Animator>();
     }
 
     protected override void OnSpawned()
@@ -55,8 +61,8 @@ public class PlayerController : NetworkIdentity
         if (isOwner)
         {
             input.Enable();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+
+            currentStamina.value = maxStamina;
 
             cmCamera.Priority = 20;
         }
@@ -66,23 +72,22 @@ public class PlayerController : NetworkIdentity
         }
     }
 
-
-    private void OnDisable()
+    void OnDisable()
     {
-        if (input != null)
-            input.Disable();
+        input?.Disable();
     }
 
-    private void Update()
+    void Update()
     {
         if (!isOwner) return;
 
         HandleMouseLook();
         HandleDodge();
         HandleJump();
+        RegenerateStamina();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (!isOwner) return;
 
@@ -96,72 +101,62 @@ public class PlayerController : NetworkIdentity
         if (isDodging) return;
 
         Vector2 moveInput = input.Player.Move.ReadValue<Vector2>();
-
-        if (Mathf.Abs(moveInput.x) > 0.1f)
-            lastHorizontal = moveInput.x;
-
         Vector3 moveDir = transform.forward * moveInput.y + transform.right * moveInput.x;
 
         float speed = moveSpeed;
-        if (input.Player.Sprint.IsPressed())
+
+        if (input.Player.Sprint.IsPressed() && currentStamina.value > 0f)
+        {
             speed *= sprintMultiplier;
 
-        Vector3 currentVelocity = rb.linearVelocity;
+            float newStamina = currentStamina.value - sprintStaminaDrain * Time.fixedDeltaTime;
+            currentStamina.value = Mathf.Max(0f, newStamina);
+        }
 
-        rb.linearVelocity = new Vector3(
-            moveDir.x * speed,
-            currentVelocity.y,
-            moveDir.z * speed
-        );
+        Vector3 v = rb.linearVelocity;
+        rb.linearVelocity = new Vector3(moveDir.x * speed, v.y, moveDir.z * speed);
     }
-
     #endregion
 
     #region Dodge
     void HandleDodge()
     {
         if (!canDodge) return;
+        if (currentStamina.value < dodgeStaminaCost) return;
 
         if (input.Player.Sprint.WasPressedThisFrame())
         {
-            if (Mathf.Abs(lastHorizontal) > 0.1f)
-            {
-                StartCoroutine(Dodge(lastHorizontal > 0 ? 1 : -1));
-            }
+            Vector2 moveInput = input.Player.Move.ReadValue<Vector2>();
+            if (moveInput.sqrMagnitude < 0.01f) return;
+
+            currentStamina.value = Mathf.Max(0f, currentStamina.value - dodgeStaminaCost);
+
+            Vector3 dir = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized;
+
+            StartCoroutine(Dodge(dir));
         }
     }
 
-
-    IEnumerator Dodge(int direction)
+    IEnumerator Dodge(Vector3 direction)
     {
-        Debug.Log("DODGE START");
-
         canDodge = false;
         isDodging = true;
 
-        // if (animator != null)
-        //     animator.SetTrigger(direction > 0 ? "DodgeRight" : "DodgeLeft");
-
-        Vector3 dodgeDir = transform.right * direction;
-        rb.AddForce(dodgeDir * dodgeForce, ForceMode.VelocityChange);
+        rb.linearVelocity = Vector3.zero;
+        rb.AddForce(direction * dodgeForce, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(dodgeDuration);
-
         isDodging = false;
 
         yield return new WaitForSeconds(dodgeCooldown);
         canDodge = true;
     }
-
     #endregion
 
     #region MouseLook
     void HandleMouseLook()
     {
-        Vector2 mouseDelta = input.Player.Look.ReadValue<Vector2>();
-
-
-        mouseDelta *= mouseSensitivity;
+        Vector2 mouseDelta = input.Player.Look.ReadValue<Vector2>() * mouseSensitivity;
 
         xRotation -= mouseDelta.y;
         xRotation = Mathf.Clamp(xRotation, -85f, 85f);
@@ -169,7 +164,6 @@ public class PlayerController : NetworkIdentity
         cameraPivot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseDelta.x);
     }
-
     #endregion
 
     #region Jump
@@ -184,15 +178,24 @@ public class PlayerController : NetworkIdentity
 
     void HandleJump()
     {
-        if (input.Player.Jump.WasPressedThisFrame() && isGrounded)
-        {
-            Vector3 v = rb.linearVelocity;
-            v.y = 0f;
-            rb.linearVelocity = v;
+        if (!input.Player.Jump.WasPressedThisFrame() || !isGrounded) return;
 
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+        Vector3 v = rb.linearVelocity;
+        v.y = 0f;
+        rb.linearVelocity = v;
+
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
+    #endregion
 
+    #region Stamina
+    void RegenerateStamina()
+    {
+        if (!isOwner) return;
+        if (isDodging) return;
+        if (input.Player.Sprint.IsPressed()) return;
+
+        currentStamina.value = Mathf.Clamp(currentStamina.value + staminaRegenRate * Time.deltaTime, 0f, maxStamina);
+    }
     #endregion
 }
