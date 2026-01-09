@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using Unity.Cinemachine;
 
-public class PlayerController : NetworkIdentity
+public class PlayerController : NetworkBehaviour
 {
     [Header("Movement")]
     [SerializeField] float moveSpeed = 5f;
@@ -16,25 +16,25 @@ public class PlayerController : NetworkIdentity
     bool isDodging;
     bool canDodge = true;
 
-
     [Header("Stamina")]
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaRegenRate = 20f;
     [SerializeField] float sprintStaminaDrain = 15f;
     [SerializeField] float dodgeStaminaCost = 35f;
 
-    public SyncVar<float> currentStamina = new SyncVar<float>(0f);
+    // SyncVar with owner authorization
+    public SyncVar<float> currentStamina = new SyncVar<float>(0f, ownerAuth: true);
+
     public float StaminaNormalized =>
         maxStamina <= 0f ? 0f : currentStamina.value / maxStamina;
 
-
+    public event System.Action<float> OnStaminaUpdated;
 
     [Header("Jump")]
     [SerializeField] float jumpForce = 5f;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] float groundCheckRadius = 0.2f;
-
     bool isGrounded;
 
     [Header("Mouse Look")]
@@ -46,25 +46,24 @@ public class PlayerController : NetworkIdentity
     PlayerInputActions input;
     float xRotation;
 
-    void Awake()
-    {
-        input = new PlayerInputActions();
-        rb = GetComponent<Rigidbody>();
-    }
-
+    #region Unity Methods
     protected override void OnSpawned()
     {
         base.OnSpawned();
 
-        enabled = isOwner;
+        rb = GetComponent<Rigidbody>();
+        input = new PlayerInputActions();
+
+        // Subscribe to SyncVar changes
+        currentStamina.onChanged += HandleStaminaChanged;
 
         if (isOwner)
         {
             input.Enable();
-
-            currentStamina.value = maxStamina;
-
             cmCamera.Priority = 20;
+
+            // Initialize stamina (owner can write)
+            currentStamina.value = maxStamina;
         }
         else
         {
@@ -75,6 +74,7 @@ public class PlayerController : NetworkIdentity
     void OnDisable()
     {
         input?.Disable();
+        currentStamina.onChanged -= HandleStaminaChanged;
     }
 
     void Update()
@@ -94,6 +94,7 @@ public class PlayerController : NetworkIdentity
         CheckGround();
         HandleMovement();
     }
+    #endregion
 
     #region Movement
     void HandleMovement()
@@ -108,12 +109,11 @@ public class PlayerController : NetworkIdentity
         if (input.Player.Sprint.IsPressed() && currentStamina.value > 0f)
         {
             speed *= sprintMultiplier;
-
-            float newStamina = currentStamina.value - sprintStaminaDrain * Time.fixedDeltaTime;
-            currentStamina.value = Mathf.Max(0f, newStamina);
+            float newStamina = Mathf.Max(0f, currentStamina.value - sprintStaminaDrain * Time.fixedDeltaTime);
+            SetStamina(newStamina);
         }
 
-        Vector3 v = rb.linearVelocity;
+        var v = rb.linearVelocity;
         rb.linearVelocity = new Vector3(moveDir.x * speed, v.y, moveDir.z * speed);
     }
     #endregion
@@ -121,18 +121,17 @@ public class PlayerController : NetworkIdentity
     #region Dodge
     void HandleDodge()
     {
-        if (!canDodge) return;
-        if (currentStamina.value < dodgeStaminaCost) return;
+        if (!canDodge || currentStamina.value < dodgeStaminaCost) return;
 
         if (input.Player.Sprint.WasPressedThisFrame())
         {
             Vector2 moveInput = input.Player.Move.ReadValue<Vector2>();
             if (moveInput.sqrMagnitude < 0.01f) return;
 
-            currentStamina.value = Mathf.Max(0f, currentStamina.value - dodgeStaminaCost);
+            float newStamina = Mathf.Max(0f, currentStamina.value - dodgeStaminaCost);
+            SetStamina(newStamina);
 
             Vector3 dir = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized;
-
             StartCoroutine(Dodge(dir));
         }
     }
@@ -153,7 +152,7 @@ public class PlayerController : NetworkIdentity
     }
     #endregion
 
-    #region MouseLook
+    #region Mouse Look
     void HandleMouseLook()
     {
         Vector2 mouseDelta = input.Player.Look.ReadValue<Vector2>() * mouseSensitivity;
@@ -169,18 +168,14 @@ public class PlayerController : NetworkIdentity
     #region Jump
     void CheckGround()
     {
-        isGrounded = Physics.CheckSphere(
-            groundCheck.position,
-            groundCheckRadius,
-            groundMask
-        );
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundMask);
     }
 
     void HandleJump()
     {
         if (!input.Player.Jump.WasPressedThisFrame() || !isGrounded) return;
 
-        Vector3 v = rb.linearVelocity;
+        var v = rb.linearVelocity;
         v.y = 0f;
         rb.linearVelocity = v;
 
@@ -191,11 +186,21 @@ public class PlayerController : NetworkIdentity
     #region Stamina
     void RegenerateStamina()
     {
-        if (!isOwner) return;
-        if (isDodging) return;
-        if (input.Player.Sprint.IsPressed()) return;
+        if (isDodging || input.Player.Sprint.IsPressed()) return;
 
-        currentStamina.value = Mathf.Clamp(currentStamina.value + staminaRegenRate * Time.deltaTime, 0f, maxStamina);
+        float newStamina = Mathf.Clamp(currentStamina.value + staminaRegenRate * Time.deltaTime, 0f, maxStamina);
+        SetStamina(newStamina);
+    }
+
+    void SetStamina(float value)
+    {
+        if (!isOwner) return; // only owner can write
+        currentStamina.value = value;
+    }
+
+    void HandleStaminaChanged(float newStamina)
+    {
+        OnStaminaUpdated?.Invoke(newStamina);
     }
     #endregion
 }
