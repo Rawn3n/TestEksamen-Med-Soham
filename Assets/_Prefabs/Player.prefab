@@ -152,8 +152,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.47138354, y: 1.9089829, z: 0.31549257}
-  m_Center: {x: -0.0009955317, y: 0.9340543, z: 0.026117973}
+  m_Size: {x: 0.47138354, y: 1.9089829, z: 0.39275306}
+  m_Center: {x: -0.0009955317, y: 0.9340543, z: 0.06474823}
 --- !u!54 &-4969390984664186275
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -324,8 +324,8 @@ MonoBehaviour:
   moveSpeed: 5
   dodgeForce: 15
   dodgeDuration: 0.25
-  dodgeCooldown: 1.2
-  sprintMultiplier: 3
+  dodgeCooldown: 2
+  sprintMultiplier: 1.5
   jumpForce: 5
   groundMask:
     serializedVersion: 2
@@ -635,7 +635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.867609, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
