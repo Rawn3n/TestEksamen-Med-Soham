@@ -5,7 +5,7 @@ using PurrNet;
 public class StaminaSlider : MonoBehaviour
 {
     [SerializeField] private Slider slider;
-    private PlayerController localPlayer;
+    private PlayerMovement localPlayer;
 
     void Awake()
     {
@@ -29,7 +29,7 @@ public class StaminaSlider : MonoBehaviour
 
     void TryFindLocalPlayer()
     {
-        foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+        foreach (var player in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
         {
             // Kun ejeren kan binde UI
             if (player.isOwner)

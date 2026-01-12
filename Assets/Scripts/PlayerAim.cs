@@ -11,7 +11,7 @@ public class PlayerAim : NetworkBehaviour
     [Header("FOV")]
     [SerializeField] float baseFOV = 75f;
     [SerializeField] float aimFOV = 55f;
-    [SerializeField] float zoomSpeed = 10f;
+    [SerializeField] float zoomSpeed = 20f;
 
     [Header("Sensitivity")]
     [SerializeField] float aimSensitivityMultiplier = 0.6f;
@@ -52,12 +52,17 @@ public class PlayerAim : NetworkBehaviour
 
     void HandleAimInput()
     {
-        if (input.Player.Aim.WasPressedThisFrame())
+        bool aimingInput = input.Player.Aim.IsPressed();
+
+        if (aimingInput && !IsAiming)
         {
+
             StartAim();
         }
-        else if (input.Player.Aim.WasReleasedThisFrame())
+
+        if (!aimingInput && IsAiming)
         {
+
             StopAim();
         }
     }
