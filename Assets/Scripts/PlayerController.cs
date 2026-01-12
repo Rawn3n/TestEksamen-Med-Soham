@@ -38,13 +38,15 @@ public class PlayerController : NetworkBehaviour
     bool isGrounded;
 
     [Header("Mouse Look")]
-    [SerializeField] float mouseSensitivity = 2f;
+    [SerializeField] float mouseSensitivity = 0.1f;
     [SerializeField] Transform cameraPivot;
     [SerializeField] CinemachineCamera cmCamera;
 
     Rigidbody rb;
     PlayerInputActions input;
     float xRotation;
+
+    [SerializeField] PlayerAim playerAim;
 
     #region Unity Methods
     protected override void OnSpawned()
@@ -54,7 +56,6 @@ public class PlayerController : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         input = new PlayerInputActions();
 
-        // Subscribe to SyncVar changes
         currentStamina.onChanged += HandleStaminaChanged;
 
         if (isOwner)
@@ -64,12 +65,17 @@ public class PlayerController : NetworkBehaviour
 
             // Initialize stamina (owner can write)
             currentStamina.value = maxStamina;
+
+            // LOCK MOUSE CURSOR
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
         else
         {
             cmCamera.Priority = 0;
         }
     }
+
 
     void OnDisable()
     {
@@ -155,7 +161,14 @@ public class PlayerController : NetworkBehaviour
     #region Mouse Look
     void HandleMouseLook()
     {
-        Vector2 mouseDelta = input.Player.Look.ReadValue<Vector2>() * mouseSensitivity;
+        float sensMultiplier = playerAim != null
+            ? playerAim.GetSensitivityMultiplier()
+            : 1f;
+
+        Vector2 mouseDelta =
+            input.Player.Look.ReadValue<Vector2>()
+            * mouseSensitivity
+            * sensMultiplier;
 
         xRotation -= mouseDelta.y;
         xRotation = Mathf.Clamp(xRotation, -85f, 85f);
@@ -163,6 +176,7 @@ public class PlayerController : NetworkBehaviour
         cameraPivot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseDelta.x);
     }
+
     #endregion
 
     #region Jump
