@@ -185,12 +185,12 @@ GameObject:
   - component: {fileID: 1928810898837995387}
   - component: {fileID: -4969390984664186275}
   - component: {fileID: 5702540970173865430}
+  - component: {fileID: 1306851411544387260}
+  - component: {fileID: 1194906774351017503}
   - component: {fileID: 1484216812603203126}
   - component: {fileID: 4936924401654270571}
-  - component: {fileID: 1194906774351017503}
   - component: {fileID: 6020896501272059077}
   - component: {fileID: 71679405262093336}
-  - component: {fileID: 1306851411544387260}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -376,153 +376,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1484216812603203126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269183177458982255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe4ea4320b680f498c0aeef3c37eada, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  mouseSensitivity: 0.1
-  cameraPivot: {fileID: 9129980614597534844}
-  cmCamera: {fileID: 8514573096059211707}
-  playerAim: {fileID: 4936924401654270571}
---- !u!114 &4936924401654270571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269183177458982255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f30cb4c01908994e90af83f839c86e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAim
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  cmCamera: {fileID: 8514573096059211707}
-  crosshair: {fileID: 3634093254972184719}
-  baseFOV: 75
-  aimFOV: 55
-  zoomSpeed: 20
-  aimSensitivityMultiplier: 0.3
---- !u!114 &1194906774351017503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269183177458982255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ac93f44e071a874e85a4d99ecd152ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSetup
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  playerCamera: {fileID: 3028235821394139192}
-  crosshairCanvas: {fileID: 5955522935420253431}
---- !u!114 &6020896501272059077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269183177458982255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1351a96fd80e627439d9bf07086160d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerShooting
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  playerAim: {fileID: 4936924401654270571}
-  throwOrigin: {fileID: 9129980614597534844}
-  trajectoryLine: {fileID: 1306851411544387260}
-  playerCamera: {fileID: 5803673330488694864}
-  throwForce: 40
-  trajectoryPoints: 10
-  timeStep: 0.05
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 72
-  ballPrefab: {fileID: 720239933830957140, guid: f4dfb831c93f6ce43ab9ef34f38e9293, type: 3}
---- !u!114 &71679405262093336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269183177458982255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4560fbb934964c14b816501538e5fd0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  moveSpeed: 5
-  dodgeForce: 15
-  dodgeDuration: 0.25
-  dodgeCooldown: 2
-  sprintMultiplier: 1.5
-  jumpForce: 5
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheck: {fileID: 8986486308465294541}
-  groundCheckRadius: 0.2
-  maxStamina: 100
-  staminaRegenRate: 20
-  sprintStaminaDrain: 20
-  dodgeStaminaCost: 35
-  currentStamina:
-    _value: 0
-    _ownerAuth: 1
-    _sendIntervalInSeconds: 0
 --- !u!120 &1306851411544387260
 LineRenderer:
   serializedVersion: 2
@@ -633,6 +486,154 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1194906774351017503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269183177458982255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac93f44e071a874e85a4d99ecd152ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSetup
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  playerCamera: {fileID: 3028235821394139192}
+  crosshairCanvas: {fileID: 5955522935420253431}
+  audioListener: {fileID: 7414504956383941395}
+--- !u!114 &1484216812603203126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269183177458982255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe4ea4320b680f498c0aeef3c37eada, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  mouseSensitivity: 0.1
+  cameraPivot: {fileID: 9129980614597534844}
+  cmCamera: {fileID: 8514573096059211707}
+  playerAim: {fileID: 4936924401654270571}
+--- !u!114 &4936924401654270571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269183177458982255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f30cb4c01908994e90af83f839c86e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAim
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  cmCamera: {fileID: 8514573096059211707}
+  crosshair: {fileID: 3634093254972184719}
+  baseFOV: 75
+  aimFOV: 55
+  zoomSpeed: 20
+  aimSensitivityMultiplier: 0.3
+--- !u!114 &6020896501272059077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269183177458982255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1351a96fd80e627439d9bf07086160d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerShooting
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  playerAim: {fileID: 4936924401654270571}
+  throwOrigin: {fileID: 9129980614597534844}
+  trajectoryLine: {fileID: 1306851411544387260}
+  playerCamera: {fileID: 5803673330488694864}
+  throwForce: 40
+  trajectoryPoints: 10
+  timeStep: 0.05
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 72
+  ballPrefab: {fileID: 720239933830957140, guid: f4dfb831c93f6ce43ab9ef34f38e9293, type: 3}
+--- !u!114 &71679405262093336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1269183177458982255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4560fbb934964c14b816501538e5fd0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  moveSpeed: 5
+  dodgeForce: 15
+  dodgeDuration: 0.25
+  dodgeCooldown: 2
+  sprintMultiplier: 1.5
+  jumpForce: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheck: {fileID: 8986486308465294541}
+  groundCheckRadius: 0.2
+  maxStamina: 100
+  staminaRegenRate: 20
+  sprintStaminaDrain: 20
+  dodgeStaminaCost: 35
+  currentStamina:
+    _value: 0
+    _ownerAuth: 1
+    _sendIntervalInSeconds: 0
 --- !u!1 &2390781865789131792
 GameObject:
   m_ObjectHideFlags: 0
