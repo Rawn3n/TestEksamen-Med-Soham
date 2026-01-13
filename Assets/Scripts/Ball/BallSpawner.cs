@@ -22,15 +22,15 @@ public class BallSpawner : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        // Debug: press E to destroy the current ball
-        if (!isServer) return; // Only server handles destruction
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            DestroyCurrentBall();
-        }
-    }
+    //private void Update()
+    //{
+    //    // Debug: press E to destroy the current ball
+    //    if (!isServer) return; // Only server handles destruction
+    //    if (Input.GetKeyDown(KeyCode.F))
+    //    {
+    //        DestroyCurrentBall();
+    //    }
+    //}
 
     private void SpawnBall()
     {
