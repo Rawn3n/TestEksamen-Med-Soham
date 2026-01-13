@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NetworkAssets
   m_EditorClassIdentifier: PurrNet.Runtime::PurrNet.NetworkAssets
   autoGenerate: 0
-  folder: {fileID: 0}
+  folder: {fileID: 102900000, guid: 91dd17ace7d2cd3448f00053afd5170e, type: 3}
   _enabledTypeNames: []
   assets: []
   _availableTypeNames: []
