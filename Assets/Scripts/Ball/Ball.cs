@@ -5,7 +5,7 @@ using PurrNet;
 public class Ball : NetworkBehaviour
 {
     [Header("Collision")]
-    [SerializeField] private string[] destroyTags = {"Enviorment", "Player"};
+    [SerializeField] private string[] destroyTags = { "Enviorment", "Player" };
 
     [Header("Lifetime")]
     [SerializeField] private float maxLifetime = 5f;
